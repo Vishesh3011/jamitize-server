@@ -1,4 +1,4 @@
-use jamitize;
+use jamitizedb;
 
 const collections = db.getCollectionNames();
 collections.forEach(function(collName) {

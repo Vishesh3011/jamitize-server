@@ -26,3 +26,44 @@ Welcome to the jamitize-server repository! This project is designed to provide a
     ├── types/
     └── utils/
 ```
+
+### Prerequisites
+MongoDB is required to run this project. Ensure you have it installed and running on your local machine or server.
+
+### Setup authentication for database
+Login to Mongodb locally and create the database and user for the application.
+```
+mongosh
+use jamitizedb
+```
+Create a user in MongoDB
+```
+db.createUser({
+  user: "jamitize-user",
+  pwd: "jamitize-user",
+  roles: [
+    { role: "readWrite", db: "jamitizedb" }
+  ]
+})
+```
+Enable authentication in MongoDB by editing the `mongod.conf` file:
+```
+security:
+  authorization: enabled
+```
+Check connection using:
+```
+mongosh -u jamitize-user -p jamitize-user --authenticationDatabase jamitizedb
+```
+
+### Setup schema and pre-requisites inside database
+```bash
+mongosh -u jamitize-user -p jamitize-user --authenticationDatabase jamitizedb < db/schema.js
+
+```
+
+### Running the Application
+
+
+
+

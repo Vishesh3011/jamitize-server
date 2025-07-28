@@ -5,7 +5,6 @@ import (
 	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"syscall"
 	"testing"
 	"time"
 )
@@ -15,20 +14,16 @@ func TestDBConnection(t *testing.T) {
 		t.Fatalf("Error loading .env file: %v", err)
 	}
 
-	host, ok := syscall.Getenv("MONGODB_HOST")
-	if !ok {
-		t.Fatalf("Error getting MONGODB_HOST")
-	}
-	port, ok := syscall.Getenv("MONGODB_PORT")
-	if !ok {
-		t.Fatalf("Error getting MONGODB_PORT")
+	config, err := newDBConfig()
+	if err != nil {
+		t.Fatalf("Error creating DB config: %v", err)
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	t.Run("TestDBConnection001", func(t *testing.T) {
-		uri := "mongodb://" + host + ":" + port
+		uri := "mongodb://" + config.database + ":" + config.password + "@" + config.host + ":" + config.port + "/" + config.database + "?authSource=admin"
 		client, err := mongo.Connect(ctx, options.Client().ApplyURI(uri))
 		if err != nil {
 			t.Fatalf("Error connecting to MongoDB: %v", err)
