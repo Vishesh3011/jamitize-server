@@ -6,8 +6,7 @@ import (
 )
 
 type AppError interface {
-	ErrorStr() string
-	Error() error
+	error
 	Status() types.Status
 	Message() any
 	Layer() types.Layer
@@ -29,10 +28,6 @@ type appError struct {
 	layer   types.Layer
 }
 
-func (a appError) Error() error {
-	return fmt.Errorf("%s", a.ErrorStr())
-}
-
 func (a appError) Json() map[string]any {
 	return map[string]any{
 		"status":  a.status,
@@ -42,7 +37,7 @@ func (a appError) Json() map[string]any {
 	}
 }
 
-func (a appError) ErrorStr() string {
+func (a appError) Error() string {
 	if a.cause != nil {
 		return fmt.Sprintf("status=%d, message=%v, cause=%v layer=%v", a.status, a.message, a.cause, a.layer)
 	}
