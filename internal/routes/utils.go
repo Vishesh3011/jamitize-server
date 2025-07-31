@@ -49,20 +49,41 @@ func HandleRequest[T any](application application.Application, handler requestHa
 	}
 }
 
-func MethodGuard(method string, next http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != method {
-			http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+func Post(router *http.ServeMux, url string, handler http.HandlerFunc) {
+	router.HandleFunc(url, handler)
+}
+
+func Get(router *http.ServeMux, url string, handler http.HandlerFunc) {
+	router.HandleFunc(url, handler)
+}
+
+func Put(router *http.ServeMux, url string, handler http.HandlerFunc) {
+	router.HandleFunc(url, handler)
+}
+
+func Delete(router *http.ServeMux, url string, handler http.HandlerFunc) {
+	router.HandleFunc(url, handler)
+}
+
+func ChainMiddleware(h http.Handler, middleware ...func(http.Handler) http.Handler) http.Handler {
+	for _, m := range middleware {
+		h = m(h)
+	}
+	return h
+}
+
+func CORSMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		writer.Header().Set("Access-Control-Allow-Origin", "*")
+		writer.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, PUT, PATCH")
+		writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+		if request.Method == "OPTIONS" {
+			writer.WriteHeader(http.StatusOK)
 			return
 		}
-		next(w, r)
-	}
-}
 
-func Post(mux *http.ServeMux, path string, handler http.HandlerFunc) {
-	mux.HandleFunc(path, MethodGuard(http.MethodPost, handler))
-}
-
-func Get(mux *http.ServeMux, path string, handler http.HandlerFunc) {
-	mux.HandleFunc(path, MethodGuard(http.MethodGet, handler))
+		next.ServeHTTP(writer, request)
+	})
 }

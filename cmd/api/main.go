@@ -25,8 +25,5 @@ func main() {
 		log.Fatal(errors.ToAppError(err, types.InternalServerError, types.Application).Error())
 	}
 
-	if err := routes.NewServer(app).Start(); err != nil {
-		log.Fatal(errors.ToAppError(err, types.InternalServerError, types.Application).Error())
-	}
-	
+	routes.NewServer(app).Start()
 }

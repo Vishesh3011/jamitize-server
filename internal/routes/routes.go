@@ -3,7 +3,9 @@ package routes
 import (
 	"example/internal/controller"
 	"example/internal/core/application"
+	"log"
 	"net/http"
+	"time"
 )
 
 type Server struct {
@@ -12,24 +14,29 @@ type Server struct {
 }
 
 func NewServer(app application.Application) *Server {
-	s := &http.Server{
-		Addr: ":8080",
-	}
 	return &Server{
-		server:      s,
 		Application: app,
 	}
 }
 
-func (s *Server) AddRoutes(mux *http.ServeMux) {
+func (s *Server) AddRoutes(router *http.ServeMux) {
 	baseUrl := "/apis"
-	mux.HandleFunc(http.MethodGet+" "+baseUrl+"/health", HandleRequest(s.Application, controller.HealthCheck))
+	Get(router, baseUrl+"/health", HandleRequest(s.Application, controller.HealthCheck))
 }
 
-func (s *Server) Start() error {
-	mux := http.NewServeMux()
-	s.AddRoutes(mux)
-	s.server.Handler = mux
-
-	return s.server.ListenAndServe()
+func (s *Server) Start() *Server {
+	router := http.NewServeMux()
+	s.AddRoutes(router)
+	handler := ChainMiddleware(router, CORSMiddleware)
+	s.server = &http.Server{
+		Addr:              ":8080",
+		Handler:           handler,
+		ReadHeaderTimeout: 10 * time.Second,
+	}
+	go func() {
+		if err := s.server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("Unable to start server: %v", err)
+		}
+	}()
+	return s
 }
