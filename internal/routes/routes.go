@@ -33,6 +33,7 @@ func (s *Server) Start() *Server {
 		Handler:           handler,
 		ReadHeaderTimeout: 10 * time.Second,
 	}
+
 	go func() {
 		if err := s.server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("Unable to start server: %v", err)

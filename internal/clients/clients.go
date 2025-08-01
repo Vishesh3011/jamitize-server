@@ -3,6 +3,7 @@ package clients
 import (
 	"context"
 	"go.mongodb.org/mongo-driver/mongo"
+	"time"
 )
 
 type Client interface {
@@ -13,7 +14,9 @@ type client struct {
 	*mongo.Client
 }
 
-func NewClient(ctx context.Context) (Client, error) {
+func NewClient() (Client, error) {
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+
 	mongoClient, err := mongo.Connect(ctx, nil)
 	if err != nil {
 		return nil, err
