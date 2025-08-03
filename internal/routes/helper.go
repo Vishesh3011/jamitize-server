@@ -9,7 +9,7 @@ import (
 	"runtime/debug"
 )
 
-type requestHandler[T any] func(application.Application, *http.ResponseWriter, *http.Request) (*T, errors.AppError)
+type requestHandler[T any] func(application.Application, http.ResponseWriter, *http.Request) (*T, errors.AppError)
 
 func HandleRequest[T any](application application.Application, handler requestHandler[T]) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
@@ -45,7 +45,7 @@ func HandleRequest[T any](application application.Application, handler requestHa
 				"data": response,
 			})
 		}()
-		response, handlerError = handler(application, &writer, request)
+		response, handlerError = handler(application, writer, request)
 	}
 }
 

@@ -23,7 +23,7 @@ func NewApplication(appConfig config.AppConfig) (Application, error) {
 		return nil, err
 	}
 
-	client, err := clients.NewClient()
+	client, err := clients.NewClient(appConfig)
 	if err != nil {
 		return nil, err
 	}

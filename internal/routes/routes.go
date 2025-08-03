@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"errors"
 	"example/internal/controller"
 	"example/internal/core/application"
 	"log"
@@ -22,9 +23,14 @@ func NewServer(app application.Application) *Server {
 func (s *Server) AddRoutes(router *http.ServeMux) {
 	baseUrl := "/apis"
 	Get(router, baseUrl+"/health", HandleRequest(s.Application, controller.HealthCheck))
+
+	v1 := baseUrl + "/v1"
+
+	user := v1 + "/users"
+	Post(router, user, HandleRequest(s.Application, controller.CreateUserController))
 }
 
-func (s *Server) Start() *Server {
+func (s *Server) Start() *http.Server {
 	router := http.NewServeMux()
 	s.AddRoutes(router)
 	handler := ChainMiddleware(router, CORSMiddleware)
@@ -34,10 +40,14 @@ func (s *Server) Start() *Server {
 		ReadHeaderTimeout: 10 * time.Second,
 	}
 
-	go func() {
-		if err := s.server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("Unable to start server: %v", err)
-		}
-	}()
-	return s
+	//go func() {
+	if err := s.server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+		log.Fatalf("Unable to start server: %v", err)
+	}
+	//}()
+	return s.server
+}
+
+func (s *Server) Server() *http.Server {
+	return s.server
 }

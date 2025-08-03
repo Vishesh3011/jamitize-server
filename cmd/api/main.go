@@ -6,6 +6,7 @@ import (
 	"example/internal/core/config"
 	"example/internal/routes"
 	"example/internal/types"
+	"example/internal/utils"
 	"github.com/joho/godotenv"
 	"log"
 )
@@ -25,5 +26,5 @@ func main() {
 		log.Fatal(errors.ToAppError(err, types.InternalServerError, types.Application).Error())
 	}
 
-	routes.NewServer(app).Start()
+	<-utils.AwaitTermination(app.Logger(), routes.NewServer(app).Start())
 }

@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-func HealthCheck(application.Application, *http.ResponseWriter, *http.Request) (*string, errors.AppError) {
+func HealthCheck(app application.Application, _ http.ResponseWriter, request *http.Request) (*string, errors.AppError) {
 	status := "I am alive!!"
 	return &status, nil
 }
