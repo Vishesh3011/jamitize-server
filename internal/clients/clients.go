@@ -3,7 +3,6 @@ package clients
 import (
 	"context"
 	"example/internal/core/config"
-	"fmt"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"time"
@@ -20,13 +19,8 @@ type client struct {
 func NewClient(appConfig config.AppConfig) (Client, error) {
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 
-	mongoUri := "mongodb://" + appConfig.DBConfig().Database() + ":" + appConfig.DBConfig().Password() + "@" + appConfig.DBConfig().Host() + ":" + appConfig.DBConfig().Port() + "/" + appConfig.DBConfig().Database() + "?authSource=admin"
-	clientOptions := options.Client().ApplyURI(mongoUri).SetAuth(options.Credential{
-		Username:   appConfig.DBConfig().Username(),
-		Password:   appConfig.DBConfig().Password(),
-		AuthSource: "admin",
-	})
-	fmt.Println("uriiiiiiiiii", clientOptions.GetURI())
+	mongoUri := "mongodb://" + appConfig.DBConfig().Username() + ":" + appConfig.DBConfig().Password() + "@" + appConfig.DBConfig().Host() + ":" + appConfig.DBConfig().Port() + "/" + appConfig.DBConfig().Database() + "?authSource=" + appConfig.DBConfig().Database()
+	clientOptions := options.Client().ApplyURI(mongoUri)
 	mongoClient, err := mongo.Connect(ctx, clientOptions)
 	if err != nil {
 		return nil, err

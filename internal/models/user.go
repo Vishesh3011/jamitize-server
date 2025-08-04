@@ -48,6 +48,7 @@ type CreateUserRequest struct {
 
 func (r CreateUserRequest) ToUser() *User {
 	return &User{
+		ID:          primitive.NewObjectID(),
 		Name:        r.Name,
 		Instruments: r.Instruments,
 		Genres:      r.Genres,
