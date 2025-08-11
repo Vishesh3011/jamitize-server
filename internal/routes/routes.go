@@ -28,6 +28,7 @@ func (s *Server) AddRoutes(router *http.ServeMux) {
 
 	user := v1 + "/users"
 	Post(router, user, HandleRequest(s.Application, controller.CreateUserController))
+	Post(router, user+"/login", HandleRequest(s.Application, controller.LoginUserController))
 }
 
 func (s *Server) Start() *http.Server {
@@ -40,11 +41,11 @@ func (s *Server) Start() *http.Server {
 		ReadHeaderTimeout: 10 * time.Second,
 	}
 
-	//go func() {
-	if err := s.server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-		log.Fatalf("Unable to start server: %v", err)
-	}
-	//}()
+	go func() {
+		if err := s.server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			log.Fatalf("Unable to start server: %v", err)
+		}
+	}()
 	return s.server
 }
 

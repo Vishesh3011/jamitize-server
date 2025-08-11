@@ -3,6 +3,7 @@ package utils
 import (
 	"context"
 	"fmt"
+	"golang.org/x/crypto/bcrypt"
 	"log/slog"
 	"net/http"
 	"os"
@@ -28,4 +29,14 @@ func AwaitTermination(logger *slog.Logger, server *http.Server) <-chan struct{} 
 		close(done)
 	}()
 	return done
+}
+
+func HashPassword(password string) string {
+	bytes, _ := bcrypt.GenerateFromPassword([]byte(password), 14)
+	return string(bytes)
+}
+
+func CheckPasswordHash(password, hash string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	return err == nil
 }

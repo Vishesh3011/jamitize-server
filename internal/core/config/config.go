@@ -3,11 +3,13 @@ package config
 type AppConfig interface {
 	DBConfig() *dbConfig
 	LoggerConfig() *loggerConfig
+	JwtConfig() *jwtConfig
 }
 
 type appConfig struct {
 	*dbConfig
 	*loggerConfig
+	*jwtConfig
 }
 
 func NewAppConfig() (AppConfig, error) {
@@ -20,9 +22,16 @@ func NewAppConfig() (AppConfig, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	jwtConfig, err := newJWTConfig()
+	if err != nil {
+		return nil, err
+	}
+
 	return &appConfig{
 		dbConfig:     dbConfig,
 		loggerConfig: loggerConfig,
+		jwtConfig:    jwtConfig,
 	}, nil
 }
 
@@ -32,4 +41,8 @@ func (c appConfig) DBConfig() *dbConfig {
 
 func (c appConfig) LoggerConfig() *loggerConfig {
 	return c.loggerConfig
+}
+
+func (c appConfig) JwtConfig() *jwtConfig {
+	return c.jwtConfig
 }

@@ -13,6 +13,7 @@ import (
 
 type UserRepository interface {
 	CreateUser(*models.User) (*models.User, errors.AppError)
+	FindUserByEmail(string) (*models.User, errors.AppError)
 }
 
 type userRepository struct {
@@ -53,6 +54,20 @@ func (r *userRepository) FindUserByID(userId primitive.ObjectID) (*models.User, 
 			return nil, errors.NewAppError(err, types.NotFound, types.NotFound, types.Repository)
 		}
 		r.logger.Error("Failed to find user by ID", "error", err)
+		return nil, errors.NewAppError(err, types.InternalServerError, types.InternalServerError, types.Repository)
+	}
+	return &user, nil
+}
+
+func (r *userRepository) FindUserByEmail(email string) (*models.User, errors.AppError) {
+	collection := r.db.Collection("users")
+	var user models.User
+	err := collection.FindOne(r.ctx, bson.M{"email": email}).Decode(&user)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, errors.NewAppError(err, types.NotFound, types.NotFound, types.Repository)
+		}
+		r.logger.Error("Failed to find user by email", "error", err)
 		return nil, errors.NewAppError(err, types.InternalServerError, types.InternalServerError, types.Repository)
 	}
 	return &user, nil

@@ -13,6 +13,7 @@ db.createCollection("messages");
 db.users.insertMany([
     {
         name: "Vishesh Modi",
+        email: "modivishesh8@gmail.com",
         instrument: "Guitar",
         genres: ["Indie", "Pop"],
         city: "Sydney",

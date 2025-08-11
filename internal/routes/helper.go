@@ -71,19 +71,3 @@ func ChainMiddleware(h http.Handler, middleware ...func(http.Handler) http.Handl
 	}
 	return h
 }
-
-func CORSMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
-		writer.Header().Set("Access-Control-Allow-Origin", "*")
-		writer.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-		writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, PUT, PATCH")
-		writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-
-		if request.Method == "OPTIONS" {
-			writer.WriteHeader(http.StatusOK)
-			return
-		}
-
-		next.ServeHTTP(writer, request)
-	})
-}

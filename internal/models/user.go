@@ -1,10 +1,15 @@
 package models
 
-import "go.mongodb.org/mongo-driver/bson/primitive"
+import (
+	"example/internal/utils"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
 
 type User struct {
 	ID          primitive.ObjectID   `bson:"_id"`
 	Name        string               `bson:"name"`
+	Email       string               `bson:"email"`
+	Password    string               `bson:"password"`
 	Instruments []string             `bson:"instruments"`
 	Genres      []string             `bson:"genres"`
 	City        string               `bson:"city"`
@@ -17,6 +22,7 @@ type User struct {
 func (u User) ToUserResponse() *UserResponse {
 	return &UserResponse{
 		Name:        u.Name,
+		Email:       u.Email,
 		Instruments: u.Instruments,
 		Genres:      u.Genres,
 		City:        u.City,
@@ -28,6 +34,7 @@ func (u User) ToUserResponse() *UserResponse {
 
 type UserResponse struct {
 	Name        string   `json:"name"`
+	Email       string   `json:"email"`
 	Instruments []string `json:"instruments"`
 	Genres      []string `json:"genres"`
 	City        string   `json:"city"`
@@ -38,6 +45,8 @@ type UserResponse struct {
 
 type CreateUserRequest struct {
 	Name        string   `json:"name"`
+	Email       string   `json:"email"`
+	Password    string   `json:"password"`
 	Instruments []string `json:"instruments"`
 	Genres      []string `json:"genres"`
 	City        string   `json:"city"`
@@ -50,11 +59,32 @@ func (r CreateUserRequest) ToUser() *User {
 	return &User{
 		ID:          primitive.NewObjectID(),
 		Name:        r.Name,
+		Email:       r.Email,
+		Password:    utils.HashPassword(r.Password),
 		Instruments: r.Instruments,
 		Genres:      r.Genres,
 		City:        r.City,
 		Experience:  r.Experience,
 		Bio:         &r.Bio,
 		Socials:     r.Socials,
+	}
+}
+
+type UserLoginRequest struct {
+	Email    string `json:"email" validate:"required"`
+	Password string `json:"password" validate:"required"`
+}
+
+type UserLoginResponse struct {
+	ID    primitive.ObjectID `bson:"_id"`
+	Email string             `json:"email"`
+	Token string             `json:"token"`
+}
+
+func NewUserLoginResponse(id primitive.ObjectID, email string, token string) *UserLoginResponse {
+	return &UserLoginResponse{
+		ID:    id,
+		Email: email,
+		Token: token,
 	}
 }

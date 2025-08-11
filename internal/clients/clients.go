@@ -2,9 +2,9 @@ package clients
 
 import (
 	"context"
+	"example/errors"
 	"example/internal/core/config"
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 	"time"
 )
 
@@ -16,18 +16,15 @@ type client struct {
 	*mongo.Client
 }
 
-func NewClient(appConfig config.AppConfig) (Client, error) {
+func NewClient(appConfig config.AppConfig) (Client, errors.AppError) {
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-
-	mongoUri := "mongodb://" + appConfig.DBConfig().Username() + ":" + appConfig.DBConfig().Password() + "@" + appConfig.DBConfig().Host() + ":" + appConfig.DBConfig().Port() + "/" + appConfig.DBConfig().Database() + "?authSource=" + appConfig.DBConfig().Database()
-	clientOptions := options.Client().ApplyURI(mongoUri)
-	mongoClient, err := mongo.Connect(ctx, clientOptions)
+	mongoC, err := getMongoClient(ctx, appConfig)
 	if err != nil {
 		return nil, err
 	}
 
 	return &client{
-		Client: mongoClient,
+		Client: mongoC,
 	}, nil
 }
 

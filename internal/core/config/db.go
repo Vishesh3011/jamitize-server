@@ -6,11 +6,11 @@ import (
 )
 
 type dbConfig struct {
-	host     string `json:"host"`
-	port     string `json:"port"`
-	username string `json:"username"`
-	password string `json:"password"`
-	database string `json:"database"`
+	host     string
+	port     string
+	username string
+	password string
+	database string
 }
 
 func newDBConfig() (*dbConfig, error) {
