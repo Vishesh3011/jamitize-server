@@ -46,6 +46,7 @@ func (s *Server) Start() *http.Server {
 			log.Fatalf("Unable to start server: %v", err)
 		}
 	}()
+	log.Println("Server started on http://localhost:8080")
 	return s.server
 }
 

@@ -14,6 +14,7 @@ import (
 type UserRepository interface {
 	CreateUser(*models.User) (*models.User, errors.AppError)
 	FindUserByEmail(string) (*models.User, errors.AppError)
+	UpdateUser(*models.User) (*models.User, errors.AppError)
 }
 
 type userRepository struct {
@@ -36,7 +37,11 @@ func (r *userRepository) CreateUser(user *models.User) (*models.User, errors.App
 	_, err := collection.InsertOne(r.ctx, user)
 	if err != nil {
 		r.logger.Error("Failed to create user", "error", err)
-		return nil, errors.NewAppError(err, types.InternalServerError, types.InternalServerError, types.Repository)
+		if mongo.IsDuplicateKeyError(err) {
+			return nil, errors.NewAppError(err, types.Conflict, nil, types.Repository)
+		} else {
+			return nil, errors.NewAppError(err, types.InternalServerError, nil, types.Repository)
+		}
 	}
 	user, appError := r.FindUserByID(user.ID)
 	if appError != nil {
@@ -71,4 +76,16 @@ func (r *userRepository) FindUserByEmail(email string) (*models.User, errors.App
 		return nil, errors.NewAppError(err, types.InternalServerError, types.InternalServerError, types.Repository)
 	}
 	return &user, nil
+}
+
+func (r *userRepository) UpdateUser(user *models.User) (*models.User, errors.AppError) {
+	collection := r.db.Collection("users")
+	filter := bson.M{"_id": user.ID}
+	update := bson.M{"$set": user}
+	_, err := collection.UpdateOne(r.ctx, filter, update)
+	if err != nil {
+		r.logger.Error("Failed to update user", "error", err)
+		return nil, errors.NewAppError(err, types.InternalServerError, nil, types.Repository)
+	}
+	return r.FindUserByID(user.ID)
 }

@@ -10,6 +10,9 @@ db.createCollection("users");
 db.createCollection("sessions");
 db.createCollection("messages");
 
+
+db.users.createIndex({ email: 1 }, { unique: true });
+
 db.users.insertMany([
     {
         name: "Vishesh Modi",

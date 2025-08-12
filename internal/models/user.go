@@ -6,47 +6,52 @@ import (
 )
 
 type User struct {
-	ID          primitive.ObjectID   `bson:"_id"`
-	Name        string               `bson:"name"`
-	Email       string               `bson:"email"`
-	Password    string               `bson:"password"`
-	Instruments []string             `bson:"instruments"`
-	Genres      []string             `bson:"genres"`
-	City        string               `bson:"city"`
-	Experience  string               `bson:"experience"`
-	Bio         *string              `bson:"bio,omitempty"`
-	Socials     []string             `bson:"socials"`
-	BandIds     []primitive.ObjectID `bson:"band_ids,omitempty"`
+	ID           primitive.ObjectID   `bson:"_id"`
+	Name         string               `bson:"name"`
+	Email        string               `bson:"email"`
+	Password     string               `bson:"password"`
+	Instruments  []string             `bson:"instruments"`
+	Genres       []string             `bson:"genres"`
+	City         string               `bson:"city"`
+	Experience   string               `bson:"experience"`
+	Bio          *string              `bson:"bio,omitempty"`
+	Socials      []string             `bson:"socials"`
+	BandIds      []primitive.ObjectID `bson:"band_ids,omitempty"`
+	RefreshToken string               `bson:"refresh_token,omitempty"`
 }
 
-func (u User) ToUserResponse() *UserResponse {
+func (u User) ToUserResponse(token string) *UserResponse {
 	return &UserResponse{
-		Name:        u.Name,
-		Email:       u.Email,
-		Instruments: u.Instruments,
-		Genres:      u.Genres,
-		City:        u.City,
-		Experience:  u.Experience,
-		Bio:         u.Bio,
-		Socials:     u.Socials,
+		Name:         u.Name,
+		Email:        u.Email,
+		Instruments:  u.Instruments,
+		Genres:       u.Genres,
+		City:         u.City,
+		Experience:   u.Experience,
+		Bio:          u.Bio,
+		Socials:      u.Socials,
+		Token:        token,
+		RefreshToken: u.RefreshToken,
 	}
 }
 
 type UserResponse struct {
-	Name        string   `json:"name"`
-	Email       string   `json:"email"`
-	Instruments []string `json:"instruments"`
-	Genres      []string `json:"genres"`
-	City        string   `json:"city"`
-	Experience  string   `json:"experience"`
-	Bio         *string  `json:"bio,omitempty"`
-	Socials     []string `json:"socials"`
+	Name         string   `json:"name"`
+	Email        string   `json:"email"`
+	Instruments  []string `json:"instruments"`
+	Genres       []string `json:"genres"`
+	City         string   `json:"city"`
+	Experience   string   `json:"experience"`
+	Bio          *string  `json:"bio,omitempty"`
+	Socials      []string `json:"socials"`
+	Token        string   `json:"token,omitempty"`
+	RefreshToken string   `json:"refreshToken"`
 }
 
 type CreateUserRequest struct {
-	Name        string   `json:"name"`
-	Email       string   `json:"email"`
-	Password    string   `json:"password"`
+	Name        string   `json:"name" validate:"required"`
+	Email       string   `json:"email" validate:"required,email"`
+	Password    string   `json:"password" validate:"required"`
 	Instruments []string `json:"instruments"`
 	Genres      []string `json:"genres"`
 	City        string   `json:"city"`
@@ -76,9 +81,10 @@ type UserLoginRequest struct {
 }
 
 type UserLoginResponse struct {
-	ID    primitive.ObjectID `bson:"_id"`
-	Email string             `json:"email"`
-	Token string             `json:"token"`
+	ID           primitive.ObjectID `bson:"_id"`
+	Email        string             `json:"email"`
+	Token        string             `json:"token"`
+	RefreshToken string             `json:"refreshToken"`
 }
 
 func NewUserLoginResponse(id primitive.ObjectID, email string, token string) *UserLoginResponse {

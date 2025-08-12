@@ -18,7 +18,7 @@ func TestJWTConfig(t *testing.T) {
 	}
 
 	t.Run("TestGenerateAndVerifyJWT", func(t *testing.T) {
-		tokenStr, err := utils.GenerateJWT(primitive.NewObjectID(), config.secret)
+		tokenStr, err := utils.GenerateJWT(primitive.NewObjectID(), "testjwt@jamitize.com", config.secret)
 		if err != nil {
 			t.Fatal(err)
 		}

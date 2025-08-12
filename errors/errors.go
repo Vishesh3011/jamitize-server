@@ -30,10 +30,12 @@ type appError struct {
 
 func (a appError) Json() map[string]any {
 	return map[string]any{
-		"status":  a.status,
-		"message": a.message,
-		"error":   a.cause,
-		"layer":   a.layer,
+		"error": map[string]any{
+			"status":  a.status,
+			"message": a.message,
+			"cause":   a.cause.Error(),
+			"layer":   a.layer,
+		},
 	}
 }
 

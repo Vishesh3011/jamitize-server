@@ -9,10 +9,11 @@ import (
 	"time"
 )
 
-func GenerateJWT(userId primitive.ObjectID, secret string) (string, errors.AppError) {
+func GenerateJWT(userId primitive.ObjectID, email, secret string) (string, errors.AppError) {
 	token := jwt.NewWithClaims(
 		jwt.SigningMethodHS256,
 		&jwt.MapClaims{
+			"email":   email,
 			"user_id": userId,
 			"exp":     time.Now().Add(time.Hour * 24).Unix(),
 			"iat":     time.Now().Unix(),
@@ -20,7 +21,24 @@ func GenerateJWT(userId primitive.ObjectID, secret string) (string, errors.AppEr
 	)
 	tokenStr, err := token.SignedString([]byte(secret))
 	if err != nil {
-		return nil, errors.ToAppError(err, types.InternalServerError, types.Application)
+		return "", errors.ToAppError(err, types.InternalServerError, types.Application)
+	}
+	return tokenStr, nil
+}
+
+func GenerateJWTRefresh(userId primitive.ObjectID, email, secret string) (string, errors.AppError) {
+	token := jwt.NewWithClaims(
+		jwt.SigningMethodHS256,
+		&jwt.MapClaims{
+			"email":   email,
+			"user_id": userId,
+			"exp":     time.Now().Add(time.Hour * 360).Unix(),
+			"iat":     time.Now().Unix(),
+		},
+	)
+	tokenStr, err := token.SignedString([]byte(secret))
+	if err != nil {
+		return "", errors.ToAppError(err, types.InternalServerError, types.Application)
 	}
 	return tokenStr, nil
 }
