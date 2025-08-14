@@ -77,4 +77,35 @@ func TestUserService(t *testing.T) {
 		assert.Equal(user.Instruments, loggedInUser.Instruments)
 		assert.Equal(user.Genres, loggedInUser.Genres)
 	})
+
+	t.Run("TestFindUserByID010", func(t *testing.T) {
+		request := &models.CreateUserRequest{
+			Name:        "test user",
+			Email:       "testuser@jamitize.com",
+			Password:    "Abcdefgh@12345678#",
+			Instruments: []string{"guitar", "drums"},
+			Genres:      []string{"pop", "rock"},
+			City:        "Canberra",
+			Experience:  "5",
+			Bio:         "",
+			Socials:     nil,
+		}
+		user, err := userService.CreateUser(request)
+		if err != nil {
+			t.Fatalf("Error creating user: %v", err)
+		}
+
+		t.Logf("User created: %v", user)
+		foundUser, err := userService.FindUserByID(user.ID.Hex())
+		if err != nil {
+			t.Fatalf("Error finding user by ID: %v", err)
+		}
+
+		assert.NotNil(foundUser)
+		assert.Equal(user.ID, foundUser.ID)
+		assert.Equal(user.Name, foundUser.Name)
+		assert.Equal(user.Email, foundUser.Email)
+		assert.Equal(user.Instruments, foundUser.Instruments)
+		assert.Equal(user.Genres, foundUser.Genres)
+	})
 }

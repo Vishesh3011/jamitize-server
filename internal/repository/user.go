@@ -13,6 +13,7 @@ import (
 
 type UserRepository interface {
 	CreateUser(*models.User) (*models.User, errors.AppError)
+	FindUserByID(primitive.ObjectID) (*models.User, errors.AppError)
 	FindUserByEmail(string) (*models.User, errors.AppError)
 	UpdateUser(*models.User) (*models.User, errors.AppError)
 }

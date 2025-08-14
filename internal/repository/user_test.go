@@ -102,4 +102,31 @@ func TestUserRepository(t *testing.T) {
 		assert.Equal(createdUser.Email, foundUser.Email)
 		assert.Equal(createdUser.City, foundUser.City)
 	})
+
+	t.Run("TestFindUserByID010", func(t *testing.T) {
+		user := &models.User{
+			ID:         primitive.NewObjectID(),
+			Name:       "test user 3",
+			Email:      "testuser3@jamitize.com",
+			Password:   "Abcdefgh@12345678#",
+			City:       "Canberra",
+			Experience: "5",
+		}
+		createdUser, err := userRepo.CreateUser(user)
+		if err != nil {
+			t.Fatalf("Error creating user: %v", err)
+		}
+
+		t.Logf("User created: %v", createdUser)
+		foundUser, err := userRepo.FindUserByID(createdUser.ID)
+		if err != nil {
+			t.Fatalf("Error finding user by ID: %v", err)
+		}
+		t.Logf("User found by ID: %v", foundUser)
+		assert.Equal(createdUser.ID.Hex(), foundUser.ID.Hex())
+		assert.Equal(createdUser.Name, foundUser.Name)
+		assert.Equal(createdUser.Email, foundUser.Email)
+		assert.Equal(createdUser.City, foundUser.City)
+		assert.Equal(createdUser.Experience, foundUser.Experience)
+	})
 }

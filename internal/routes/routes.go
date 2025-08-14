@@ -29,6 +29,8 @@ func (s *Server) AddRoutes(router *http.ServeMux) {
 	user := v1 + "/users"
 	Post(router, user, HandleRequest(s.Application, controller.CreateUserController))
 	Post(router, user+"/login", HandleRequest(s.Application, controller.LoginUserController))
+
+	AuthPatch(router, user+"/refresh", HandleRequest(s.Application, controller.RefreshUserTokenController), s.Application.Config().JwtConfig().Secret())
 }
 
 func (s *Server) Start() *http.Server {

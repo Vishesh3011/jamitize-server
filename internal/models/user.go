@@ -1,8 +1,10 @@
 package models
 
 import (
+	"example/internal/types"
 	"example/internal/utils"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"time"
 )
 
 type User struct {
@@ -18,6 +20,9 @@ type User struct {
 	Socials      []string             `bson:"socials"`
 	BandIds      []primitive.ObjectID `bson:"band_ids,omitempty"`
 	RefreshToken string               `bson:"refresh_token,omitempty"`
+	State        types.State          `bson:"state,omitempty"`
+	CreatedAt    time.Time            `bson:"created_at,omitempty"`
+	UpdatedAt    time.Time            `bson:"updated_at,omitempty"`
 }
 
 func (u User) ToUserResponse(token string) *UserResponse {
@@ -32,20 +37,26 @@ func (u User) ToUserResponse(token string) *UserResponse {
 		Socials:      u.Socials,
 		Token:        token,
 		RefreshToken: u.RefreshToken,
+		State:        u.State,
+		CreatedAt:    u.CreatedAt,
+		UpdatedAt:    u.UpdatedAt,
 	}
 }
 
 type UserResponse struct {
-	Name         string   `json:"name"`
-	Email        string   `json:"email"`
-	Instruments  []string `json:"instruments"`
-	Genres       []string `json:"genres"`
-	City         string   `json:"city"`
-	Experience   string   `json:"experience"`
-	Bio          *string  `json:"bio,omitempty"`
-	Socials      []string `json:"socials"`
-	Token        string   `json:"token,omitempty"`
-	RefreshToken string   `json:"refreshToken"`
+	Name         string      `json:"name"`
+	Email        string      `json:"email"`
+	Instruments  []string    `json:"instruments"`
+	Genres       []string    `json:"genres"`
+	City         string      `json:"city"`
+	Experience   string      `json:"experience"`
+	Bio          *string     `json:"bio,omitempty"`
+	Socials      []string    `json:"socials"`
+	Token        string      `json:"token,omitempty"`
+	RefreshToken string      `json:"refreshToken"`
+	State        types.State `json:"state"`
+	CreatedAt    time.Time   `json:"createdAt"`
+	UpdatedAt    time.Time   `json:"updatedAt"`
 }
 
 type CreateUserRequest struct {
@@ -72,25 +83,13 @@ func (r CreateUserRequest) ToUser() *User {
 		Experience:  r.Experience,
 		Bio:         &r.Bio,
 		Socials:     r.Socials,
+		State:       types.ACTIVE,
+		CreatedAt:   time.Now(),
+		UpdatedAt:   time.Now(),
 	}
 }
 
 type UserLoginRequest struct {
 	Email    string `json:"email" validate:"required"`
 	Password string `json:"password" validate:"required"`
-}
-
-type UserLoginResponse struct {
-	ID           primitive.ObjectID `bson:"_id"`
-	Email        string             `json:"email"`
-	Token        string             `json:"token"`
-	RefreshToken string             `json:"refreshToken"`
-}
-
-func NewUserLoginResponse(id primitive.ObjectID, email string, token string) *UserLoginResponse {
-	return &UserLoginResponse{
-		ID:    id,
-		Email: email,
-		Token: token,
-	}
 }

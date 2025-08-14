@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"encoding/json"
 	"example/internal/utils"
 	"net/http"
 )
@@ -21,20 +22,22 @@ func CORSMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-func JWTMiddleware(secret string, next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+func JWTMiddleware(secret string, next http.Handler) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Content-Type", "application/json")
 		tokenStr := r.Header.Get("Authorization")
 		if tokenStr == "" {
-			w.WriteHeader(http.StatusUnauthorized)
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(map[string]string{"error": "Authorization header is missing"})
 			return
 		}
 		tokenStr = tokenStr[len("Bearer "):]
 		err := utils.VerifyJWT(tokenStr, secret)
 		if err != nil {
-			w.WriteHeader(http.StatusUnauthorized)
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(map[string]string{"error": "Invalid or expired token"})
 			return
 		}
 		next.ServeHTTP(w, r)
-	})
+	}
 }
