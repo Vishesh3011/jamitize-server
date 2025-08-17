@@ -23,7 +23,7 @@ func TestJWTConfig(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = utils.VerifyJWT(tokenStr, config.secret)
+		err = utils.VerifyJWTAccess(tokenStr, config.secret)
 		if err != nil {
 			t.Fatal(err)
 		}

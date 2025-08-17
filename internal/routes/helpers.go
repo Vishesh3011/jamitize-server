@@ -49,47 +49,57 @@ func HandleRequest[T any](application application.Application, handler requestHa
 }
 
 func Post(router *http.ServeMux, url string, handler http.HandlerFunc) {
+	url = http.MethodPost + " " + url
 	router.HandleFunc(url, handler)
 }
 
 func AuthPost(router *http.ServeMux, url string, handler http.HandlerFunc, secret string) {
 	authHandler := JWTMiddleware(secret, handler)
+	url = http.MethodPost + " " + url
 	router.HandleFunc(url, authHandler)
 }
 
 func Get(router *http.ServeMux, url string, handler http.HandlerFunc) {
+	url = http.MethodGet + " " + url
 	router.HandleFunc(url, handler)
 }
 
 func AuthGet(router *http.ServeMux, url string, handler http.HandlerFunc, secret string) {
 	authHandler := JWTMiddleware(secret, handler)
+	url = http.MethodGet + " " + url
 	router.HandleFunc(url, authHandler)
 }
 
 func Put(router *http.ServeMux, url string, handler http.HandlerFunc) {
+	url = http.MethodPut + " " + url
 	router.HandleFunc(url, handler)
 }
 
 func AuthPut(router *http.ServeMux, url string, handler http.HandlerFunc, secret string) {
 	authHandler := JWTMiddleware(secret, handler)
+	url = http.MethodPut + " " + url
 	router.HandleFunc(url, authHandler)
 }
 
 func Patch(router *http.ServeMux, url string, handler http.HandlerFunc) {
+	url = http.MethodPatch + " " + url
 	router.HandleFunc(url, handler)
 }
 
 func AuthPatch(router *http.ServeMux, url string, handler http.HandlerFunc, secret string) {
 	authHandler := JWTMiddleware(secret, handler)
+	url = http.MethodPatch + " " + url
 	router.HandleFunc(url, authHandler)
 }
 
 func Delete(router *http.ServeMux, url string, handler http.HandlerFunc) {
+	url = http.MethodDelete + " " + url
 	router.HandleFunc(url, handler)
 }
 
 func AuthDelete(router *http.ServeMux, url string, handler http.HandlerFunc, secret string) {
 	authHandler := JWTMiddleware(secret, handler)
+	url = http.MethodDelete + " " + url
 	router.HandleFunc(url, authHandler)
 }
 

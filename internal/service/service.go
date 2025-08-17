@@ -2,8 +2,7 @@ package service
 
 import (
 	"context"
-	"go.mongodb.org/mongo-driver/mongo"
-	"log/slog"
+	"example/internal/core/application"
 )
 
 type Service interface {
@@ -18,8 +17,8 @@ func (s service) User() UserService {
 	return s.userSvc
 }
 
-func NewService(ctx context.Context, logger *slog.Logger, db *mongo.Database) Service {
+func NewService(ctx context.Context, app application.Application) Service {
 	return &service{
-		userSvc: NewUserService(ctx, logger, db),
+		userSvc: NewUserService(ctx, app.Logger(), app.DB(), app.Config().JwtConfig().Secret()),
 	}
 }

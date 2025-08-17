@@ -32,7 +32,7 @@ func JWTMiddleware(secret string, next http.Handler) http.HandlerFunc {
 			return
 		}
 		tokenStr = tokenStr[len("Bearer "):]
-		err := utils.VerifyJWT(tokenStr, secret)
+		err := utils.VerifyJWTAccess(tokenStr, secret)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			json.NewEncoder(w).Encode(map[string]string{"error": "Invalid or expired token"})

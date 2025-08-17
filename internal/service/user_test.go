@@ -10,7 +10,7 @@ import (
 
 func TestUserService(t *testing.T) {
 	appTest := test.NewAppTest(nil)
-	userService := NewUserService(appTest.Context(), appTest.Logger(), appTest.DB())
+	userService := NewUserService(appTest.Context(), appTest.Logger(), appTest.DB(), appTest.Config().JwtConfig().Secret())
 	t.Cleanup(func() {
 		if err := utils.CleanupCollections(appTest.Context(), appTest.DB()); err != nil {
 			t.Fatalf("Error cleaning up collections: %v", err)
@@ -96,7 +96,7 @@ func TestUserService(t *testing.T) {
 		}
 
 		t.Logf("User created: %v", user)
-		foundUser, err := userService.FindUserByID(user.ID.Hex())
+		foundUser, err := userService.FindUserByEmail(user.Email)
 		if err != nil {
 			t.Fatalf("Error finding user by ID: %v", err)
 		}

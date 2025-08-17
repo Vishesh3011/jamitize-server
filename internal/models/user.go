@@ -25,7 +25,7 @@ type User struct {
 	UpdatedAt    time.Time            `bson:"updated_at,omitempty"`
 }
 
-func (u User) ToUserResponse(token string) *UserResponse {
+func (u User) ToUserResponse(token *string) *UserResponse {
 	return &UserResponse{
 		Name:         u.Name,
 		Email:        u.Email,
@@ -52,7 +52,7 @@ type UserResponse struct {
 	Experience   string      `json:"experience"`
 	Bio          *string     `json:"bio,omitempty"`
 	Socials      []string    `json:"socials"`
-	Token        string      `json:"token,omitempty"`
+	Token        *string     `json:"token,omitempty"`
 	RefreshToken string      `json:"refreshToken"`
 	State        types.State `json:"state"`
 	CreatedAt    time.Time   `json:"createdAt"`

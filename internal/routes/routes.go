@@ -27,10 +27,17 @@ func (s *Server) AddRoutes(router *http.ServeMux) {
 	v1 := baseUrl + "/v1"
 
 	user := v1 + "/users"
+	// Public User Routes
 	Post(router, user, HandleRequest(s.Application, controller.CreateUserController))
-	Post(router, user+"/login", HandleRequest(s.Application, controller.LoginUserController))
 
-	AuthPatch(router, user+"/refresh", HandleRequest(s.Application, controller.RefreshUserTokenController), s.Application.Config().JwtConfig().Secret())
+	// Others
+	Post(router, user+"/auth/login", HandleRequest(s.Application, controller.LoginUserController))
+
+	// Auth User Routes
+	AuthGet(router, user, HandleRequest(s.Application, controller.FindUserByEmailController), s.Application.Config().JwtConfig().Secret())
+
+	// Others
+	AuthPatch(router, user+"/auth/refresh", HandleRequest(s.Application, controller.RefreshUserTokenController), s.Application.Config().JwtConfig().Secret())
 }
 
 func (s *Server) Start() *http.Server {

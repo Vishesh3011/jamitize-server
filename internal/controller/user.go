@@ -28,20 +28,20 @@ func CreateUserController(app application.Application, _ http.ResponseWriter, re
 		return nil, errors.NewAppError(err, types.BadRequest, nil, types.Controller)
 	}
 
-	userService := service.NewService(ctx, app.Logger(), app.DB()).User()
+	userService := service.NewService(ctx, app).User()
 	user, appError := userService.CreateUser(userRequest)
 	if appError != nil {
 		logger.Error("Failed to create user", "error", appError)
 		return nil, appError
 	}
 
-	tok, err := utils.GenerateJWT(user.ID, user.Email, app.Config().JwtConfig().Secret())
+	tok, err := utils.GenerateJWT(user.ID.Hex(), user.Email, app.Config().JwtConfig().Secret())
 	if err != nil || len(tok) == 0 {
 		logger.Error("Failed to generate JWT", "error", err)
 		return nil, errors.NewAppError(err, types.InternalServerError, nil, types.Controller)
 	}
 
-	refreshToken, err := utils.GenerateJWTRefresh(user.ID.String(), user.Email, app.Config().JwtConfig().Secret())
+	refreshToken, err := utils.GenerateJWTRefresh(user.ID.Hex(), user.Email, app.Config().JwtConfig().Secret())
 	if err != nil || len(refreshToken) == 0 {
 		logger.Error("Failed to generate refresh token", "error", err)
 		return nil, errors.NewAppError(err, types.InternalServerError, nil, types.Controller)
@@ -53,7 +53,7 @@ func CreateUserController(app application.Application, _ http.ResponseWriter, re
 		return nil, errors.NewAppError(err, types.InternalServerError, nil, types.Controller)
 	}
 
-	return user.ToUserResponse(tok), nil
+	return user.ToUserResponse(&tok), nil
 }
 
 func LoginUserController(app application.Application, _ http.ResponseWriter, request *http.Request) (*models.UserResponse, errors.AppError) {
@@ -69,25 +69,49 @@ func LoginUserController(app application.Application, _ http.ResponseWriter, req
 		return nil, errors.NewAppError(err, types.BadRequest, nil, types.Controller)
 	}
 
-	user, appError := service.NewService(ctx, app.Logger(), app.DB()).User().LoginUser(userLoginReq)
+	user, appError := service.NewService(ctx, app).User().LoginUser(userLoginReq)
 	if appError != nil {
 		logger.Error("Failed to login user", "error", appError)
 		return nil, appError
 	}
 
-	tok, err := utils.GenerateJWT(user.ID, user.Email, app.Config().JwtConfig().Secret())
+	tok, err := utils.GenerateJWT(user.ID.Hex(), user.Email, app.Config().JwtConfig().Secret())
 	if err != nil || len(tok) == 0 {
 		logger.Error("Failed to generate JWT", "error", err)
 		return nil, errors.NewAppError(err, types.InternalServerError, nil, types.Controller)
 	}
-	return user.ToUserResponse(tok), nil
+	return user.ToUserResponse(&tok), nil
+}
+
+func FindUserByEmailController(app application.Application, _ http.ResponseWriter, request *http.Request) (*models.UserResponse, errors.AppError) {
+	ctx := request.Context()
+	logger := app.Logger()
+	email := request.URL.Query().Get("email")
+	if email == "" {
+		logger.Error("Email query parameter is missing")
+		return nil, errors.NewAppError(nil, types.BadRequest, nil, types.Controller)
+	}
+
+	user, appError := service.NewService(ctx, app).User().FindUserByEmail(email)
+	if appError != nil {
+		logger.Error("Failed to find user by email", "error", appError)
+		return nil, appError
+	}
+
+	return user.ToUserResponse(nil), nil
 }
 
 func RefreshUserTokenController(app application.Application, _ http.ResponseWriter, request *http.Request) (*models.UserResponse, errors.AppError) {
 	ctx := request.Context()
 	logger := app.Logger()
-	token := request.Header.Get("token")
-	email, userId, err := utils.ParseJWT(token, app.Config().JwtConfig().Secret())
+	token := request.Header.Get("Authorization")
+	if token == "" {
+		logger.Error("Authorization header is missing")
+		return nil, errors.NewAppError(nil, types.BadRequest, nil, types.Controller)
+	}
+	token = token[len("Bearer "):]
+
+	email, userId, err := utils.VerifyJWTRefresh(token, app.Config().JwtConfig().Secret())
 	if err != nil {
 		logger.Error("Failed to parse JWT", "error", err)
 		return nil, errors.NewAppError(err, types.InternalServerError, nil, types.Controller)
@@ -99,17 +123,17 @@ func RefreshUserTokenController(app application.Application, _ http.ResponseWrit
 		return nil, errors.NewAppError(err, types.InternalServerError, nil, types.Controller)
 	}
 
-	user, appError := service.NewService(ctx, app.Logger(), app.DB()).User().RefreshUserToken(*email, refreshToken)
+	user, appError := service.NewService(ctx, app).User().RefreshUserToken(*email, refreshToken)
 	if appError != nil {
 		logger.Error("Failed to refresh user token", "error", appError)
 		return nil, appError
 	}
 
-	tok, err := utils.GenerateJWT(user.ID, user.Email, app.Config().JwtConfig().Secret())
+	tok, err := utils.GenerateJWT(user.ID.Hex(), user.Email, app.Config().JwtConfig().Secret())
 	if err != nil || len(tok) == 0 {
 		logger.Error("Failed to generate JWT", "error", err)
 		return nil, errors.NewAppError(err, types.InternalServerError, nil, types.Controller)
 	}
 
-	return user.ToUserResponse(tok), nil
+	return user.ToUserResponse(&tok), nil
 }
