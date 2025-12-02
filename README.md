@@ -46,7 +46,7 @@ db.createUser({
   ]
 })
 ```
-Enable authentication in MongoDB by editing the `mongod.conf` file:
+Enable authentication in MongoDB by editing the `mongod.conf` in ~/etc/:
 ```
 security:
   authorization: enabled
@@ -63,7 +63,9 @@ mongosh -u jamitize-user -p jamitize-user --authenticationDatabase jamitizedb < 
 ```
 
 ### Running the Application
-
+```bash
+go run cmd/api/main.go
+````
 
 
 

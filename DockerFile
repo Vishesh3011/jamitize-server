@@ -1,0 +1,37 @@
+#########################
+# Stage 1: Base (Build)
+#########################
+
+# get golang version for base stage
+FROM golang:1.22-alpine AS base
+
+# install git
+RUN apk add --no-cache git
+
+# mention the working directory
+WORKDIR /jamitize-server
+
+# get & run the required dependencies
+COPY go.mod go.sum ./
+RUN go mod download
+
+# get all source code
+COPY . .
+
+# build the binary file
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o bin/main
+
+#########################
+# Stage 2: Runtime (Build)
+#########################
+
+# get the distorless version
+FROM gcr.io/distroless/base-debian12
+
+WORKDIR /jamitize-server
+
+# mention the port to run on
+EXPOSE 8080
+
+# run the binary file
+CMD [ "./bin/main" ]
