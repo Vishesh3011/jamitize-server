@@ -59,7 +59,6 @@ mongosh -u jamitize-user -p jamitize-user --authenticationDatabase jamitizedb
 ### Setup schema and pre-requisites inside database
 ```bash
 mongosh -u jamitize-user -p jamitize-user --authenticationDatabase jamitizedb < db/schema.js
-
 ```
 
 ### Running the Application

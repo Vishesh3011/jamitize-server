@@ -1,0 +1,48 @@
+services:
+  jamitize-server:
+    image: jamitize-server
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+      target: build-dev
+    init: true
+    volumes:
+      - type: bind
+        source: .
+        target: /jamitize-server
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    env_file:
+      - ./.env
+    networks:
+      - backend
+    ports:
+      - 8080:8080
+    restart: unless-stopped
+    
+  mongodb:
+    image: mongo:8
+    volumes:
+      - mongodbdata:/data/db
+      - ./db/init-user.js:/docker-entrypoint-initdb.d/init-user.js
+      - ./db/schema.js:/docker-entrypoint-initdb.d/schema.js
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: rootpassword
+    ports:
+      - 27017:27017
+    healthcheck:
+      test: ["CMD", "mongosh", "-u", "root", "-p", "rootpassword", "--authenticationDatabase", "admin", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    networks:
+      - backend
+
+networks:
+  backend:
+
+volumes:
+  mongodbdata:
