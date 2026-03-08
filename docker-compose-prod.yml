@@ -4,12 +4,7 @@ services:
     build:
       context: ./
       dockerfile: ./Dockerfile
-      target: build-dev
     init: true
-    volumes:
-      - type: bind
-        source: .
-        target: /jamitize-server
     depends_on:
       mongodb:
         condition: service_healthy
@@ -25,8 +20,7 @@ services:
     image: mongo:8
     volumes:
       - mongodbdata:/data/db
-      - ./db/init-user.js:/docker-entrypoint-initdb.d/init-user.js
-      - ./db/schema.js:/docker-entrypoint-initdb.d/schema.js
+      - ./db:/docker-entrypoint-initdb.d
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: rootpassword

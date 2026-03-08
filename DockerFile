@@ -58,6 +58,9 @@ COPY --from=build-prod /etc/passwd /etc/passwd
 # Copy the app binary from the build stage into the scratch stage
 COPY --from=build-prod /jamitize-server/bin/api bin/api
 
+# Copy .env for prod
+COPY --from=build-prod /jamitize-server/.env /.env
+
 # Use non root user
 USER nonroot
 
