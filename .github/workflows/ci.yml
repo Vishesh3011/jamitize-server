@@ -13,8 +13,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: List repository files
-        run: ls -la
+      - name: Setup Go environment
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.24"
       
-      - name: Print a message
-        run: echo "Repo successfully checked out!"
+      - name: Verify Go Installation
+        run:  |
+          go version
+          go env GOPATH
+
+      - name: Install Go Dependencies
+        run: go mod download
+
+      - name: Run tests
+        run: go test ./...
