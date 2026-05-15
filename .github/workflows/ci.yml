@@ -3,7 +3,7 @@ name: Basic CI
 on:
   push:
     branches:
-      - main
+      - learning/github-actions
   pull_request:
 
 jobs:
@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@4
+        uses: actions/checkout@v4
 
       - name: List repository files
         run: ls -la
