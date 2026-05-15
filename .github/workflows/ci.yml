@@ -10,5 +10,11 @@ jobs:
   hello:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@4
+
+      - name: List repository files
+        run: ls -la
+      
       - name: Print a message
-        run: echo "GitHub actions is alive!!"
+        run: echo "Repo successfully checked out!"
