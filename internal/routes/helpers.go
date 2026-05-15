@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"example/errors"
 	"example/internal/core/application"
+	"fmt"
 	"net/http"
 	"runtime"
 	"runtime/debug"
@@ -35,7 +36,7 @@ func HandleRequest[T any](application application.Application, handler requestHa
 					writer.WriteHeader(int(appError.Status()))
 					json.NewEncoder(writer).Encode(appError.Json())
 				} else {
-					application.Logger().Error("API Request error: %v", handlerError)
+					application.Logger().Error(fmt.Sprintf("API Request error: %v", handlerError))
 					http.Error(writer, handlerError.Error(), http.StatusInternalServerError)
 				}
 				return
