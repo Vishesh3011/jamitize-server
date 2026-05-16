@@ -9,9 +9,24 @@ on:
 jobs:
   hello:
     runs-on: ubuntu-latest
+    services:
+        mongodb:
+          image: mongo:7
+          ports:
+            - 27017:27017
+          env:
+            MONGO_INITDB_DATABASE: jamitizedb
+            MONGO_INITDB_ROOT_USERNAME: jamitize-user
+            MONGO_INITDB_ROOT_PASSWORD: jamitize-user
+          options: >-
+            --health-cmd="mongosh --quiet --eval 'db.adminCommand({ ping: 1 })'"
+            --health-interval=10s
+            --health-timeout=5s
+            --health-retries=5
+          
+
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Setup Go environment
         uses: actions/setup-go@v5
@@ -25,6 +40,31 @@ jobs:
 
       - name: Install Go Dependencies
         run: go mod download
+      
+      - name: Check MongoDB status
+        run: |
+          until mongosh \
+          "mongodb://jamitize-user:jamitize-user@localhost:27017/jamitizedb?authSource=admin" \
+            --quiet --eval "db.runCommand({ ping: 1 })"
+          do
+            echo "Waiting for MongoDB"
+            sleep 2
+          done
+
+      - name: Initialize Schema
+        run: |
+          mongosh \
+          "mongodb://jamitize-user:jamitize-user@localhost:27017/jamitizedb?authSource=admin" \
+            < db/schema.js
 
       - name: Run tests
+        env:
+          ENVIRONMENT: dev
+          MONGODB_HOST: localhost
+          MONGODB_PORT: "27017"
+          MONGODB_DATABASE: jamitizedb
+          MONGODB_USERNAME: jamitize-user
+          MONGODB_PASSWORD: jamitize-user
+          JWT_SECRET: test-secret
+          LOG_URL: ""
         run: go test ./...
