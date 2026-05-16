@@ -7,7 +7,7 @@ on:
   pull_request:
 
 jobs:
-  hello:
+  run_tests:
     runs-on: ubuntu-latest
     services:
         mongodb:
@@ -40,6 +40,24 @@ jobs:
 
       - name: Install Go Dependencies
         run: go mod download
+      
+      - name: Create application database user
+        run: |
+          CONTAINER_ID=$(docker ps --filter "ancestor=mongo:7" --format "{{.ID}}" | head -n 1)
+
+          docker exec -i "$CONTAINER_ID" mongosh \
+            -u jamitize-user \
+            -p jamitize-user \
+            --authenticationDatabase admin <<'EOF'
+          use jamitizedb
+          db.createUser({
+            user: "jamitize-user",
+            pwd: "jamitize-user",
+            roles: [
+              { role: "readWrite", db: "jamitizedb" }
+            ]
+          })
+          EOF
       
       - name: Initialize schema
         run: |
