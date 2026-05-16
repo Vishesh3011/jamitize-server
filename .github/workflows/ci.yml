@@ -88,11 +88,11 @@ jobs:
         run: |
           cat > .env <<EOF
           ENVIRONMENT=prod
-          MONGODB_HOST=localhost
+          MONGODB_HOST=mongodb
           MONGODB_PORT=27017
           MONGODB_DATABASE=jamitizedb
-          MONGODB_USERNAME=jamitize-user
-          MONGODB_PASSWORD=jamitize-user
+          MONGODB_USERNAME=root
+          MONGODB_PASSWORD=rootpassword
           JWT_SECRET=test-secret
           LOG_URL=
           EOF
@@ -109,10 +109,21 @@ jobs:
       - name: Show the running containers
         run: docker compose -f docker-compose-prod.yml ps
       
-      # - name: Run a service Health check
-      #   run: curl -f http://localhost:8080/apis/health
+      - name: Wait for API health check
+        run: |
+          for i in {1..30}; do
+            if curl -f http://localhost:8080/apis/health; then
+              echo "API is healthy"
+              exit 0
+            fi
+            echo "Waiting for API..."
+            sleep 2
+          done
+          echo "API did not become healthy"
+          exit 1
 
       - name: Show logs
+        if: always()
         run: docker compose -f docker-compose-prod.yml logs --tail=100
       
       - name: Stop running containers
