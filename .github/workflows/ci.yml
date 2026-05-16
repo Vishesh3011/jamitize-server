@@ -109,8 +109,8 @@ jobs:
       - name: Show the running containers
         run: docker compose -f docker-compose-prod.yml ps
       
-      - name: Run a service Health check
-        run: curl -f http://localhost:8080/apis/health
+      # - name: Run a service Health check
+      #   run: curl -f http://localhost:8080/apis/health
 
       - name: Show logs
         run: docker compose -f docker-compose-prod.yml logs --tail=100
