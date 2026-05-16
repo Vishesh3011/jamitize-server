@@ -98,5 +98,24 @@ jobs:
           EOF
 
       - name: Build Docker image
-        run: docker build -t jamitize .
+        run: docker build -t jamitize-server .
+      
+      - name: Display Docker image size
+        run: docker images jamitize-server --format "table {{.Repository}}\t{{.Tag}}\t{{.Size}}"
+
+      - name: Start container
+        run: docker compose -f docker-compose-prod.yml up -d
+
+      - name: Show the running containers
+        run: docker compose -f docker-compose-prod.yml ps
+      
+      - name: Run a service Health check
+        run: curl -f http://localhost:8080/apis/health
+
+      - name: Show logs
+        run: docker compose -f docker-compose-prod.yml logs --tail=100
+      
+      - name: Stop running containers
+        if: always()
+        run: docker compose -f docker-compose-prod.yml down -v
       
