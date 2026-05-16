@@ -48,7 +48,7 @@ func TestUserService(t *testing.T) {
 	t.Run("TestLoginUser005", func(t *testing.T) {
 		request := &models.CreateUserRequest{
 			Name:        "test user",
-			Email:       "testuser@jamitize.com",
+			Email:       "testuser2@jamitize.com",
 			Password:    "Abcdefgh@12345678#",
 			Instruments: []string{"guitar", "drums"},
 			Genres:      []string{"pop", "rock"},
@@ -81,7 +81,7 @@ func TestUserService(t *testing.T) {
 	t.Run("TestFindUserByID010", func(t *testing.T) {
 		request := &models.CreateUserRequest{
 			Name:        "test user",
-			Email:       "testuser@jamitize.com",
+			Email:       "testuser3@jamitize.com",
 			Password:    "Abcdefgh@12345678#",
 			Instruments: []string{"guitar", "drums"},
 			Genres:      []string{"pop", "rock"},

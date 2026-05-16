@@ -55,7 +55,7 @@ func TestUserRepository(t *testing.T) {
 		user := &models.User{
 			ID:         primitive.NewObjectID(),
 			Name:       "test user 1",
-			Email:      "testuser@jamitize.com",
+			Email:      "testuser1@jamitize.com",
 			Password:   "Abcdefgh@12345678#",
 			City:       "Canberra",
 			Experience: "5",

@@ -26,6 +26,7 @@ type appError struct {
 	status  types.Status
 	message any
 	layer   types.Layer
+	json    map[string]any
 }
 
 func (a appError) Json() map[string]any {

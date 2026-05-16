@@ -34,7 +34,7 @@ func HandleRequest[T any](application application.Application, handler requestHa
 			if handlerError != nil {
 				if appError, ok := handlerError.(errors.AppError); ok {
 					writer.WriteHeader(int(appError.Status()))
-					json.NewEncoder(writer).Encode(appError.Json())
+					// json.NewEncoder(writer).Encode(appError.Json())
 				} else {
 					application.Logger().Error(fmt.Sprintf("API Request error: %v", handlerError))
 					http.Error(writer, handlerError.Error(), http.StatusInternalServerError)
