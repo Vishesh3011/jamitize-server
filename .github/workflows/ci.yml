@@ -41,20 +41,11 @@ jobs:
       - name: Install Go Dependencies
         run: go mod download
       
-      - name: Check MongoDB status
+      - name: Initialize schema
         run: |
-          until mongosh \
-          "mongodb://jamitize-user:jamitize-user@localhost:27017/jamitizedb?authSource=admin" \
-            --quiet --eval "db.runCommand({ ping: 1 })"
-          do
-            echo "Waiting for MongoDB"
-            sleep 2
-          done
-
-      - name: Initialize Schema
-        run: |
-          mongosh \
-          "mongodb://jamitize-user:jamitize-user@localhost:27017/jamitizedb?authSource=admin" \
+          CONTAINER_ID=$(docker ps --filter "ancestor=mongo:7" --format "{{.ID}}" | head -n 1)
+          docker exec -i "$CONTAINER_ID" mongosh \
+            "mongodb://jamitize-user:jamitize-user@localhost:27017/jamitizedb?authSource=admin" \
             < db/schema.js
 
       - name: Run tests
