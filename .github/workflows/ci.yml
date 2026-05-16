@@ -83,7 +83,20 @@ jobs:
     needs: run_tests
     steps:
       - uses: actions/checkout@v4
-      
+
+      - name: Create temporary .env
+        run: |
+          cat > .env <<EOF
+          ENVIRONMENT=prod
+          MONGODB_HOST=localhost
+          MONGODB_PORT=27017
+          MONGODB_DATABASE=jamitizedb
+          MONGODB_USERNAME=jamitize-user
+          MONGODB_PASSWORD=jamitize-user
+          JWT_SECRET=test-secret
+          LOG_URL=
+          EOF
+
       - name: Build Docker image
         run: docker build -t jamitize .
       
