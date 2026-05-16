@@ -77,3 +77,6 @@ jobs:
           JWT_SECRET: test-secret
           LOG_URL: ""
         run: go test ./...
+
+      - name: Run Docker Image
+        run: docker build -t jamitize .
