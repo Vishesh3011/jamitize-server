@@ -10,6 +10,8 @@ services:
         condition: service_healthy
     env_file:
       - ./.env
+    volumes:
+      - ./.env:/.env:ro
     networks:
       - backend
     ports:
