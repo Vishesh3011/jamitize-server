@@ -45,7 +45,7 @@ func NewAppTest(path *string) AppTest {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	
+
 	return appTest{
 		Application: app,
 		ctx:         ctx,

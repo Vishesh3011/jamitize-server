@@ -27,7 +27,7 @@ func NewClient(appConfig config.AppConfig) (Client, errors.AppError) {
 	}
 
 	return &client{
-		Client: mongoC,
+		Client:     mongoC,
 		CancelFunc: cancel,
 	}, nil
 }

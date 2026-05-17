@@ -1,5 +1,5 @@
 # create a base stage for basic requirements
-FROM golang:1.23-bullseye AS build-base
+FROM golang:1.25 AS build-base
 
 WORKDIR /jamitize-server
 
