@@ -28,6 +28,7 @@ func NewApplication(appConfig config.AppConfig) (Application, errors.AppError) {
 	}
 
 	client, err := clients.NewClient(appConfig)
+	defer client.Cancel()()
 	if err != nil {
 		return nil, errors.ToAppError(err, types.InternalServerError, types.Application)
 	}

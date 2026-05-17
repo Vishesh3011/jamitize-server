@@ -1,0 +1,41 @@
+name: Security Scan
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  schedule:
+    - cron: "0 2 * * 1"
+  workflow_dispatch:
+
+jobs:
+  trivy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create temporary .env
+        run: |
+          cat > .env <<EOF
+          ENVIRONMENT=prod
+          MONGODB_HOST=mongodb
+          MONGODB_PORT=27017
+          MONGODB_DATABASE=jamitizedb
+          MONGODB_USERNAME=root
+          MONGODB_PASSWORD=rootpassword
+          JWT_SECRET=test-secret
+          LOG_URL=
+          EOF
+
+      - name: Build Docker image
+        run: docker build -t jamitize-server .
+
+      - name: Scan Docker image with Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: jamitize-server:latest
+          format: table
+          exit-code: 1
+          severity: CRITICAL,HIGH

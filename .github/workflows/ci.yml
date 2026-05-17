@@ -3,6 +3,7 @@ name: Basic CI
 on:
   push:
     branches:
+      - main
       - learning/github-actions
   pull_request:
 
@@ -65,6 +66,18 @@ jobs:
           docker exec -i "$CONTAINER_ID" mongosh \
             "mongodb://jamitize-user:jamitize-user@localhost:27017/jamitizedb?authSource=admin" \
             < db/schema.js
+
+      - name: Check formatting
+        run: |
+            unformatted=$(gofmt -l .)
+            if [ -n "$unformatted" ]; then
+              echo "The following files are not formatted:"
+              echo "$unformatted"
+              exit 1
+            fi
+
+      - name: Run go vet
+        run: go vet ./...
 
       - name: Run tests
         env:
