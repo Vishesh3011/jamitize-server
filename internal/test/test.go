@@ -4,23 +4,29 @@ import (
 	"context"
 	"example/internal/core/application"
 	"example/internal/core/config"
-	"github.com/joho/godotenv"
 	"log"
-	"time"
+
+	"github.com/joho/godotenv"
 )
 
 type AppTest interface {
 	application.Application
 	Context() context.Context
+	Cancel() context.CancelFunc
 }
 
 type appTest struct {
 	application.Application
-	ctx context.Context
+	ctx    context.Context
+	cancel context.CancelFunc
 }
 
 func (a appTest) Context() context.Context {
 	return a.ctx
+}
+
+func (a appTest) Cancel() context.CancelFunc {
+	return a.cancel
 }
 
 func NewAppTest(path *string) AppTest {
@@ -43,11 +49,11 @@ func NewAppTest(path *string) AppTest {
 		log.Fatalf("Error creating application: %v", err)
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
+	ctx, cancel := context.WithCancel(context.Background())
 
 	return appTest{
 		Application: app,
 		ctx:         ctx,
+		cancel:      cancel,
 	}
 }

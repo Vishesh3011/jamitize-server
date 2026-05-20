@@ -10,6 +10,7 @@ services:
       - type: bind
         source: .
         target: /jamitize-server
+      - ./.env:/.env:ro
     depends_on:
       mongodb:
         condition: service_healthy
