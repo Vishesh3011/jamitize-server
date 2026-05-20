@@ -30,7 +30,7 @@ jobs:
                   key: ${{ secrets.EC2_SSH_KEY }}
                   port: ${{ secrets.EC2_PORT || 22 }}
                   script: |
-                      cd /home/ubuntu/jamitize
+                      cd /home/${{ secrets.EC2_USER }}/jamitize
 
                       docker compose -f docker-compose-prod.yml pull
                       docker compose -f docker-compose-prod.yml up -d
