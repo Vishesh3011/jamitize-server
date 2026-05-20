@@ -1,4 +1,4 @@
-name: Basic CI
+name: CI
 
 on:
   push:
@@ -117,10 +117,10 @@ jobs:
         run: docker images jamitize-server --format "table {{.Repository}}\t{{.Tag}}\t{{.Size}}"
 
       - name: Start container
-        run: docker compose -f docker-compose-prod.yml up -d
+        run: docker compose -f docker-compose-ci.yml up -d
 
       - name: Show the running containers
-        run: docker compose -f docker-compose-prod.yml ps
+        run: docker compose -f docker-compose-ci.yml ps
       
       - name: Wait for API health check
         run: |
@@ -137,9 +137,9 @@ jobs:
 
       - name: Show logs
         if: always()
-        run: docker compose -f docker-compose-prod.yml logs --tail=100
+        run: docker compose -f docker-compose-ci.yml logs --tail=100
       
       - name: Stop running containers
         if: always()
-        run: docker compose -f docker-compose-prod.yml down -v
+        run: docker compose -f docker-compose-ci.yml down -v
       
