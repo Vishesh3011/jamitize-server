@@ -1,9 +1,6 @@
 services:
   jamitize-server:
-    image: jamitize-server
-    build:
-      context: ./
-      dockerfile: ./Dockerfile
+    image: ghcr.io/vishesh3011/jamitize-server:${IMAGE_TAG}
     init: true
     depends_on:
       mongodb:
