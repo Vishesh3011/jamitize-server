@@ -19,6 +19,7 @@ jobs:
                   host: ${{ secrets.EC2_HOST }}
                   username: ${{ secrets.EC2_USER }}
                   key: ${{ secrets.EC2_SSH_KEY }}
+                  port: ${{ secrets.EC2_PORT || 30 }}
                   source: "docker-compose-prod.yml,db"
                   target: "/home/${{ secrets.EC2_USER }}/jamitize"
 
@@ -28,6 +29,7 @@ jobs:
                   host: ${{ secrets.EC2_HOST }}
                   username: ${{ secrets.EC2_USER }}
                   key: ${{ secrets.EC2_SSH_KEY }}
+                  port: ${{ secrets.EC2_PORT || 30 }}
                   script: |
                       cd /home/ubuntu/jamitize
 
