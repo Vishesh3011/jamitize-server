@@ -11,7 +11,7 @@ import (
 func TestUserService(t *testing.T) {
 	appTest := test.NewAppTest(nil)
 	defer appTest.Cancel()
-	
+
 	userService := NewUserService(appTest.Context(), appTest.Logger(), appTest.DB(), appTest.Config().JwtConfig().Secret())
 	t.Cleanup(func() {
 		if err := utils.CleanupCollections(appTest.Context(), appTest.DB()); err != nil {
