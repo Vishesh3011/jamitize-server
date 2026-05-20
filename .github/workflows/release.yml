@@ -34,13 +34,16 @@ jobs:
                   -u ${{ github.actor }} \
                   --password-stdin
 
+            - name: Convert repository owner to lowercase
+              run: echo "OWNER_LC=${GITHUB_REPOSITORY_OWNER,,}" >> $GITHUB_ENV
+
             - name: Build Docker image
               run: |
                   docker build \
-                      -t ghcr.io/${{ github.repository_owner }}/jamitize-server:${{ github.ref_name }} \
+                      -t ghcr.io/${{ env.OWNER_LC }}/jamitize-server:${{ github.ref_name }} \
                       .
 
             - name: Push Docker image
               run: |
                   docker push \
-                      ghcr.io/${{ github.repository_owner }}/jamitize-server:${{ github.ref_name }}
+                      ghcr.io/${{ env.OWNER_LC }}/jamitize-server:${{ github.ref_name }}
