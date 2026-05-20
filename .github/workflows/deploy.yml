@@ -13,6 +13,11 @@ jobs:
         steps:
             - uses: actions/checkout@v4
 
+            - name: Check Secrets
+              run: |
+                  echo "${{ secrets.EC2_HOST }}" \
+                  echo "${{ secrets.EC2_SSH_KEY }}"
+
             - name: Copy deployment files to EC2
               uses: appleboy/scp-action@v0.1.7
               with:
